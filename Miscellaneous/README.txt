@@ -1,0 +1,1 @@
+read-coordinate.m is for reading the data in gyroscope text file

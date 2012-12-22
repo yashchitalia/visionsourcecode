@@ -1,0 +1,43 @@
+clear all;close all;clc;
+
+%Final Mean
+% 
+load horz_raw.mat MU1 MV1
+time=1:200;
+%Filtered Horiz
+Fs=16;
+cutoff=3;
+[num,den] = butter(1,0.3/8,'low'); 
+filtered_horiz = filtfilt(num,den,MU1(1:200));
+
+figure,plot(time,filtered_horiz);
+fnames=dir('*.jpg');
+
+textColor1    = [255, 0, 0];
+textColor2    = [0, 0,255];
+
+
+for K=1:length(time)
+
+    I=imread(fnames(K).name);
+    textLocation = [size(I,2)/2 size(I,1)-20];
+    
+    if filtered_horiz(K)>=1
+    textInserter_horiz = vision.TextInserter('East','Color', textColor1, 'FontSize', 24, 'Location', textLocation);
+    else if filtered_horiz(K)<-1
+    textInserter_horiz = vision.TextInserter('West','Color', textColor1, 'FontSize', 24, 'Location', textLocation);
+        end
+    end
+    if MV1(K)>=10 
+    textInserter_vert= vision.TextInserter('North','Color', textColor2, 'FontSize', 24, 'Location', textLocation+50);
+    else if MV1(K)<-10
+    textInserter_vert= vision.TextInserter('South','Color', textColor2, 'FontSize', 24, 'Location', textLocation+50);
+        end
+    end
+    
+    J = step(textInserter, I);
+        
+    imshow(J);
+
+end
+
